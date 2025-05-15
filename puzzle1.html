@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Crossword Puzzle: Famous Women in and Around India</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #c3f0ff 0%, #e1c6f0 100%);
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #2c3e50;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 2.2rem;
+    color: #3a0764;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  }
+  .crossword-container {
+    background: white;
+    padding: 25px 25px 15px 25px;
+    border-radius: 15px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 720px;
+    width: 100%;
+  }
+  table {
+    border-collapse: collapse;
+    user-select: none;
+  }
+  td {
+    width: 44px;
+    height: 44px;
+    border: 2px solid #3a0764;
+    background: #f8f0ff;
+    position: relative;
+  }
+  td.black {
+    background: #3a0764;
+    border: 2px solid #3a0764;
+  }
+  td .number {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #3a0764cc;
+  }
+  input {
+    width: 100%;
+    height: 100%;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    background: transparent;
+    text-align: center;
+    color: #3a0764;
+    caret-color: #9c27b0;
+    font-family: 'Montserrat', sans-serif;
+    outline-offset: -2px;
+    cursor: pointer;
+  }
+  input:focus {
+    background: #e8d7f6;
+  }
+  .buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  button {
+    background: #9c27b0;
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 10px 28px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 3px 8px rgba(156,39,176,0.5);
+  }
+  button:hover {
+    background: #6a1b9a;
+  }
+  .clues-container {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 700px;
+    background: #fdf6ff;
+    padding: 20px 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(156,39,176,0.15);
+    color: #4a148c;
+  }
+  .clues-container h2 {
+    margin-top: 0;
+    font-weight: 700;
+    font-size: 1.6rem;
+    text-align: center;
+  }
+  .clues-section {
+    margin-top: 18px;
+  }
+  .clues-section h3 {
+    font-weight: 700;
+    border-bottom: 2px solid #9c27b0;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
+  }
+  .clue-item {
+    margin: 6px 0;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+  .clue-number {
+    font-weight: 700;
+    color: #9c27b0;
+    margin-right: 10px;
+  }
+  .score-message {
+    margin-top: 18px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #6a1b9a;
+    text-align: center;
+    min-height: 2em;
+  }
+  @media (max-width: 780px) {
+    td {
+      width: 36px;
+      height: 36px;
+    }
+    input {
+      font-size: 1.1rem;
+    }
+    .clues-container {
+      font-size: 0.9rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Women Achievers Crossword Puzzle</h1>
+  <div class="crossword-container" role="main" aria-label="Crossword Puzzle">
+    <table id="crossword" aria-describedby="hints-desc" aria-label="Crossword grid"></table>
+    <div class="buttons">
+      <button id="submitBtn">Submit</button>
+      <button id="nextBtn" onclick="goToNextPuzzle()">Next</button>
+    </div>
+    <div id="score" class="score-message" aria-live="polite" aria-atomic="true"></div>
+  </div>
+  <div class="clues-container" id="hints-desc">
+    <h2>Hints</h2>
+    <div class="clues-section" id="across-clues">
+      <h3>Across</h3>
+      <!-- across clues go here -->
+    </div>
+    <div class="clues-section" id="down-clues">
+      <h3>Down</h3>
+      <!-- down clues go here -->
+    </div>
+  </div>
+
+<script>
+
+
+
+
+
+
+(() => {
+  // Words (famous women names) with grid positions + direction + clue + number
+  // Grid uses 0-based rows and cols
+  // Table size: We'll do 12x12 for enough space
+  // Words: MARIE, PRATIBHA, BACHENDRI, KIRAN, KALPANA, INDIRA, LATA, KAMALA, SUDHA, LAKSHMIBAI
+  // Arrange words so that crossword forms properly with intersections.
+
+  // Layout plan:
+  // Number, word, direction, start row, start col, clue
+
+  /*
+    1. MARIE (Across) at (0,0)
+    2. PRATIBHA (Down) at (0,2) (Intersecting at R)
+    3. BACHENDRI (Across) at (3,0)
+    4. KIRAN (Down) at (0,8)
+    5. KALPANA (Across) at (6,2)
+    6. INDIRA (Down) at (3,6)
+    7. LATA (Across) at (9,0)
+    8. KAMALA (Down) at (5,5)
+    9. SUDHA (Across) at (11,4)
+    10. LAKSHMIBAI (Down) at (0,10)
+  */
+
+  const words = [
+    { number: 1, word: "MARIE", direction: "across", row: 0, col: 0,
+      clue: "Famous physicist and chemist" },
+    { number: 2, word: "PRATIBHA", direction: "down", row: 2, col: 11,
+      clue: "First woman President of India" },
+    { number: 3, word: "BACHENDRI", direction: "across", row: 3, col: 0,
+      clue: "First Indian woman to climb Mount Everest" },
+    { number: 4, word: "KIRAN", direction: "down", row: 4, col: 9,
+      clue: "First female IPS officer of India" },
+    { number: 5, word: "KALPANA", direction: "across", row: 6, col: 1,
+      clue: "First female Astronaut" },
+    { number: 6, word: "INDIRA", direction: "down", row: 5, col: 6,
+      clue: "Former Prime Minister of India" },
+    { number: 7, word: "LATA", direction: "across", row: 9, col: 0,
+      clue: "Legendary playback singer" },
+    { number: 8, word: "KAMALA", direction: "down", row: 5, col: 5,
+      clue: "first female Vice President of USA" },
+    { number: 9, word: "SUDHA", direction: "across", row: 12, col: 4,
+      clue: "Classical dancer and actress" },
+    { number: 10, word: "LAKSHMIBAI", direction: "down", row: 0, col: 10,
+      clue: "Warrior queen of Jhansi" }
+  ];
+
+  const rows = 13;
+  const cols = 13;
+
+  // Initialize grid with black cells
+  const grid = [];
+  for(let r=0; r<rows; r++) {
+    grid[r] = [];
+    for(let c=0; c<cols; c++) {
+      grid[r][c] = { letter: '', number: null, isBlack: true };
+    }
+  }
+
+  // Place words in grid and mark clue numbers
+  words.forEach(({number, word, direction, row, col}) => {
+    let r = row;
+    let c = col;
+    for(let i=0; i<word.length; i++) {
+      grid[r][c].letter = word[i].toUpperCase();
+      grid[r][c].isBlack = false;
+      if(i===0 && grid[r][c].number === null) {
+        grid[r][c].number = number;
+      }
+      if(direction === "across") c++;
+      else r++;
+    }
+  });
+
+  // Render crossword table
+  const table = document.getElementById('crossword');
+  table.innerHTML = '';
+  for(let r=0; r<rows; r++) {
+    const tr = document.createElement('tr');
+    for(let c=0; c<cols; c++) {
+      const cell = grid[r][c];
+      const td = document.createElement('td');
+      if(cell.isBlack) {
+        td.classList.add('black');
+        td.setAttribute('aria-hidden', 'true');
+      } else {
+        const input = document.createElement('input');
+        input.setAttribute('maxlength', '1');
+        input.setAttribute('aria-label', `Letter at row ${r+1} column ${c+1}`);
+        input.dataset.row = r;
+        input.dataset.col = c;
+        td.appendChild(input);
+        if(cell.number) {
+          const numDiv = document.createElement('div');
+          numDiv.classList.add('number');
+          numDiv.textContent = cell.number;
+          td.appendChild(numDiv);
+        }
+      }
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+
+
+
+
+
+
+
+  // Populate clues at bottom
+  const acrossCluesDiv = document.getElementById('across-clues');
+  const downCluesDiv = document.getElementById('down-clues');
+  acrossCluesDiv.innerHTML = '';
+  downCluesDiv.innerHTML = '';
+
+  words.forEach(({number, word, direction, clue}) => {
+    const p = document.createElement('p');
+    p.classList.add('clue-item');
+    p.innerHTML = `<span class="clue-number">${number}.</span> ${clue}`;
+    if(direction === 'across') acrossCluesDiv.appendChild(p);
+    else downCluesDiv.appendChild(p);
+  });
+
+  // Automatically uppercase input letter and focus moves forward
+  function focusNextCell(r, c) {
+    let nr = r;
+    let nc = c + 1;
+    while(nc < cols && grid[nr][nc].isBlack) {
+      nc++;
+    }
+    if(nc < cols) {
+      const nextInput = table.querySelector(`input[data-row="${nr}"][data-col="${nc}"]`);
+      if(nextInput) nextInput.focus();
+    }
+  }
+
+  // Automatically focus previous on backspace empty
+  function focusPrevCell(r, c) {
+    let nr = r;
+    let nc = c - 1;
+    while(nc >= 0 && grid[nr][nc].isBlack) {
+      nc--;
+    }
+    if(nc >= 0) {
+      const prevInput = table.querySelector(`input[data-row="${nr}"][data-col="${nc}"]`);
+      if(prevInput) prevInput.focus();
+    }
+  }
+
+  // Handle inputs
+  table.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', e => {
+      const val = e.target.value.toUpperCase();
+      e.target.value = val.replace(/[^A-Z]/g, '');
+      if(val) {
+        const r = parseInt(e.target.dataset.row);
+        const c = parseInt(e.target.dataset.col);
+        focusNextCell(r,c);
+      }
+    });
+    input.addEventListener('keydown', e => {
+      const r = parseInt(e.target.dataset.row);
+      const c = parseInt(e.target.dataset.col);
+      if(e.key === 'Backspace' && e.target.value === '') {
+        e.preventDefault();
+        focusPrevCell(r, c);
+      }
+    });
+  });
+
+  function checkAnswers() {
+    let totalLetters = 0;
+    let correctLetters = 0;
+    table.querySelectorAll('input').forEach(input => {
+      const r = parseInt(input.dataset.row);
+      const c = parseInt(input.dataset.col);
+      const correctLetter = grid[r][c].letter.toUpperCase();
+      if(correctLetter) {
+        totalLetters++;
+        if(input.value === correctLetter) {
+          correctLetters++;
+          input.style.backgroundColor = '#d4edda'; // green
+          input.style.color = '#155724';
+        } else {
+          input.style.backgroundColor = '#f8d7da'; // red
+          input.style.color = '#721c24';
+        }
+      }
+    });
+    return {correctLetters, totalLetters};
+  }
+
+  function resetPuzzle() {
+    table.querySelectorAll('input').forEach(input => {
+      input.value = '';
+      input.style.backgroundColor = '';
+      input.style.color = '#3a0764';
+    });
+    document.getElementById('score').textContent = '';
+  }
+
+  // Submit button event
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const {correctLetters, totalLetters} = checkAnswers();
+    const percentage = Math.round((correctLetters / totalLetters) * 100);
+    const scoreMessage = `Score: ${correctLetters} out of ${totalLetters} letters correct (${percentage}%)`;
+    document.getElementById('score').textContent = scoreMessage;
+  });
+
+  // Next button event (reset for now)
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    resetPuzzle();
+  });
+
+})();
+
+function goToNextPuzzle() {
+  window.location.href = "puzzle6.html"; // Change this to your actual next puzzle file or URL
+}
+
+
+</script>
+</body>
+</html>
+

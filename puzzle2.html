@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Crossword Puzzle: Famous Women in and Around India</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #c3f0ff 0%, #e1c6f0 100%);
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #2c3e50;
+    align-items: center;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 2.2rem;
+    color: #3a0764;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+  }
+  .crossword-container {
+    background: white;
+    padding: 25px 25px 15px 25px;
+    border-radius: 15px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 720px;
+    width: 100%;
+  }
+  table {
+    border-collapse: collapse;
+    user-select: none;
+  }
+  td {
+    width: 44px;
+    height: 44px;
+    border: 2px solid #3a0764;
+    background: #f8f0ff;
+    position: relative;
+  }
+  td.black {
+    background: #3a0764;
+    border: 2px solid #3a0764;
+  }
+  td .number {
+    position: absolute;
+    top: 2px;
+    left: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #3a0764cc;
+  }
+  input {
+    width: 100%;
+    height: 100%;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    background: transparent;
+    text-align: center;
+    color: #3a0764;
+    caret-color: #9c27b0;
+    font-family: 'Montserrat', sans-serif;
+    outline-offset: -2px;
+    cursor: pointer;
+  }
+  input:focus {
+    background: #e8d7f6;
+  }
+  .buttons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  button {
+    background: #9c27b0;
+    border: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 10px 28px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 3px 8px rgba(156,39,176,0.5);
+  }
+  button:hover {
+    background: #6a1b9a;
+  }
+  .clues-container {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 700px;
+    background: #fdf6ff;
+    padding: 20px 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(156,39,176,0.15);
+    color: #4a148c;
+  }
+  .clues-container h2 {
+    margin-top: 0;
+    font-weight: 700;
+    font-size: 1.6rem;
+    text-align: center;
+  }
+  .clues-section {
+    margin-top: 18px;
+  }
+  .clues-section h3 {
+    font-weight: 700;
+    border-bottom: 2px solid #9c27b0;
+    margin-bottom: 12px;
+    padding-bottom: 4px;
+  }
+  .clue-item {
+    margin: 6px 0;
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+  .clue-number {
+    font-weight: 700;
+    color: #9c27b0;
+    margin-right: 10px;
+  }
+  .score-message {
+    margin-top: 18px;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #6a1b9a;
+    text-align: center;
+    min-height: 2em;
+  }
+  @media (max-width: 780px) {
+    td {
+      width: 36px;
+      height: 36px;
+    }
+    input {
+      font-size: 1.1rem;
+    }
+    .clues-container {
+      font-size: 0.9rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Women Achievers Crossword Puzzle</h1>
+  <div class="crossword-container" role="main" aria-label="Crossword Puzzle">
+    <table id="crossword" aria-describedby="hints-desc" aria-label="Crossword grid"></table>
+    <div class="buttons">
+      <button id="submitBtn">Submit</button>
+      <button id="nextBtn" onclick="goToNextPuzzle()">Next</button>
+    </div>
+    <div id="score" class="score-message" aria-live="polite" aria-atomic="true"></div>
+  </div>
+  <div class="clues-container" id="hints-desc">
+    <h2>Hints</h2>
+    <div class="clues-section" id="across-clues">
+      <h3>Across</h3>
+      <!-- across clues go here -->
+    </div>
+    <div class="clues-section" id="down-clues">
+      <h3>Down</h3>
+      <!-- down clues go here -->
+    </div>
+  </div>
+
+<script>
+(() => {
+  // Array of multiple puzzles
+  // Each puzzle includes words: array of {number, word, direction, row, col, clue}
+  // Grid dimension fixed at 13x13 for demo simplicity
+
+  const puzzles = [
+    // Puzzle 1 (User requested layout)
+    {
+      words: [
+        { number: 1, word: "MERKEL", direction: "across", row: 0, col: 0,
+          clue: "Former German Chancellor known for her leadership" },
+        { number: 2, word: "ADA", direction: "down", row: 1, col: 5,
+          clue: "Pioneer computer programmer, worked on the Analytical Engine" },
+        { number: 3, word: "SERENA", direction: "across", row: 3, col: 0,
+          clue: "Tennis legend with multiple Grand Slam titles" },
+        { number: 4, word: "SAKSHI", direction: "down", row: 0, col: 8,
+          clue: "	First Indian woman wrestler to win Olympic medal" },
+        { number: 5, word: "GUNJAN", direction: "across", row: 6, col: 2,
+          clue: "Kargil War helicopter pilot, one of India’s first female combat pilots" },
+        { number: 6, word: "ANANDIBAI", direction: "down", row: 1, col: 11,
+          clue: "One of the first Indian women doctors educated in the U.S" },
+        { number: 7, word: "SHIVANGI", direction: "across", row: 9, col: 0,
+          clue: "First female pilot in the Indian Navy" },
+        { number: 8, word: "KAMALA", direction: "down", row: 1, col: 6,
+          clue: "First female Vice President of USA" },
+        { number: 9, word: "SAROJINI", direction: "across", row: 11, col: 4,
+          clue: "The Nightingale of India, poet and first woman president of INC" },
+        { number: 10, word: "KASTURBA", direction: "down", row: 0, col: 10,
+          clue: "Wife of Mahatma Gandhi, social activist in India’s freedom movement" }
+      ]
+    },
+    // Puzzle 2 (Some different layout & clues)
+    {
+      words: [
+        { number: 1, word: "VIDYALAKSHMI", direction: "across", row: 1, col: 1,
+          clue: "One of the first women to get a degree in India" },
+        { number: 2, word: "BHOOTAN", direction: "down", row: 1, col: 6,
+          clue: "Bhutanese queen known for advocacy of environmental and historical causes" },
+        { number: 3, word: "PRATIBHA", direction: "across", row: 4, col: 2,
+          clue: "First woman President of India" },
+        { number: 4, word: "AVANI", direction: "down", row: 0, col: 9,
+          clue: "One of the first female fighter pilots in the Indian Air Force" },
+        { number: 5, word: "KAMALADEVI", direction: "across", row: 7, col: 3,
+          clue: "ocial reformer and freedom fighter, worked for women’s rights" },
+        { number: 6, word: "SANIA", direction: "down", row: 3, col: 1,
+          clue: "Tennis star and multiple Grand Slam winner in doubles" },
+        { number: 7, word: "AMRITA", direction: "across", row: 9, col: 0,
+          clue: "ndia’s first modern woman artist, famous painter" },
+        { number: 8, word: "MARYKOM", direction: "down", row: 5, col: 8,
+          clue: "Six-time world boxing champion from Manipur" },
+        { number: 9, word: "KALPANA", direction: "across", row: 11, col: 1,
+          clue: "Indian astronaut in space" },
+        { number: 10, word: "SUDHA", direction: "down", row: 8, col: 12,
+          clue: "Classical dancer and actress" },
+      ]
+    },
+    // Puzzle 3 (Another variation)
+    {
+      words: [
+        { number: 1, word: "HARMANPREET", direction: "down", row: 0, col: 0,
+          clue: "Captain of India’s women’s cricket team7" },
+        { number: 2, word: "TANUJA", direction: "across", row: 0, col: 3,
+          clue: "Indian Army Major who summited Mt. Everest" },
+        { number: 3, word: "AISHWARYA", direction: "down", row: 2, col: 5,
+          clue: "	Renowned actress, won Miss World in 1994" },
+        { number: 4, word: "BHAVANI	", direction: "across", row: 5, col: 3,
+          clue: "India’s first Olympic fencer" },
+        { number: 5, word: "BEGUMHAZRAT", direction: "down", row: 4, col: 8,
+          clue: "Warrior queen of Awadh during the 1857 rebellion" },
+        { number: 6, word: "REITA	", direction: "across", row: 7, col: 0,
+          clue: "First Indian woman to win Miss World" },
+        { number: 7, word: "BACHENDRI", direction: "down", row: 6, col: 9,
+          clue: "First Indian woman on Everest" },
+        { number: 8, word: "MANUSHI", direction: "across", row: 9, col: 1,
+          clue: "Medical student turned Miss World winner" },
+        { number: 9, word: "KAMALA", direction: "down", row: 7, col: 5,
+          clue: "Current US Vice President" },
+        { number: 10, word: "INDIRA", direction: "across", row: 11, col: 3,
+          clue: "First Indian to win Miss Universe" },
+      ]
+    }
+  ];
+
+  const rows = 13;
+  const cols = 13;
+  let currentPuzzleIndex = 0;
+
+  // Elements references
+  const crosswordTable = document.getElementById('crossword');
+  const acrossCluesDiv = document.getElementById('across-clues');
+  const downCluesDiv = document.getElementById('down-clues');
+  const scoreMessageDiv = document.getElementById('score');
+  const submitBtn = document.getElementById('submitBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let grid = []; // current puzzle grid
+
+  function buildGrid(words) {
+    // reset grid with black cells
+    const newGrid = [];
+    for(let r=0; r<rows; r++) {
+      newGrid[r] = [];
+      for(let c=0; c<cols; c++) {
+        newGrid[r][c] = {letter:'', number:null, isBlack:true};
+      }
+    }
+    // place words
+    words.forEach(({number, word, direction, row, col}) => {
+      let r = row;
+      let c = col;
+      for(let i=0; i<word.length; i++) {
+        newGrid[r][c].letter = word[i].toUpperCase();
+        newGrid[r][c].isBlack = false;
+        if(i === 0 && newGrid[r][c].number === null) {
+          newGrid[r][c].number = number;
+        }
+        if(direction === 'across') c++;
+        else r++;
+      }
+    });
+    return newGrid;
+  }
+
+  function renderGrid(grid) {
+    crosswordTable.innerHTML = '';
+    for(let r=0; r<rows; r++) {
+      const tr = document.createElement('tr');
+      for(let c=0; c<cols; c++) {
+        const cell = grid[r][c];
+        const td = document.createElement('td');
+        if(cell.isBlack) {
+          td.classList.add('black');
+          td.setAttribute('aria-hidden', 'true');
+        } else {
+          const input = document.createElement('input');
+          input.setAttribute('maxlength', '1');
+          input.setAttribute('aria-label', `Letter at row ${r+1} column ${c+1}`);
+          input.dataset.row = r;
+          input.dataset.col = c;
+          td.appendChild(input);
+          if(cell.number) {
+            const numDiv = document.createElement('div');
+            numDiv.classList.add('number');
+            numDiv.textContent = cell.number;
+            td.appendChild(numDiv);
+          }
+        }
+        tr.appendChild(td);
+      }
+      crosswordTable.appendChild(tr);
+    }
+  }
+
+  function renderClues(words) {
+    acrossCluesDiv.innerHTML = '';
+    downCluesDiv.innerHTML = '';
+    words.forEach(({number, direction, clue}) => {
+      const p = document.createElement('p');
+      p.classList.add('clue-item');
+      p.innerHTML = `<span class="clue-number">${number}.</span> ${clue}`;
+      if(direction === 'across') acrossCluesDiv.appendChild(p);
+      else downCluesDiv.appendChild(p);
+    });
+  }
+
+  // Focus next input cell horizontally ignoring black cells
+  function focusNextCell(r,c) {
+    let nr = r;
+    let nc = c + 1;
+    while(nc < cols && grid[nr][nc].isBlack) {
+      nc++;
+    }
+    if(nc < cols) {
+      const nextInput = crosswordTable.querySelector(`input[data-row="${nr}"][data-col="${nc}"]`);
+      if(nextInput) nextInput.focus();
+    }
+  }
+  // Focus prev input cell horizontally ignoring black cells
+  function focusPrevCell(r,c) {
+    let nr = r;
+    let nc = c - 1;
+    while(nc >= 0 && grid[nr][nc].isBlack) {
+      nc--;
+    }
+    if(nc >= 0) {
+      const prevInput = crosswordTable.querySelector(`input[data-row="${nr}"][data-col="${nc}"]`);
+      if(prevInput) prevInput.focus();
+    }
+  }
+
+  function addInputListeners() {
+    crosswordTable.querySelectorAll('input').forEach(input => {
+      input.addEventListener('input', e => {
+        const val = e.target.value.toUpperCase();
+        e.target.value = val.replace(/[^A-Z]/g,'');
+        if(val) {
+          const r = parseInt(e.target.dataset.row);
+          const c = parseInt(e.target.dataset.col);
+          focusNextCell(r,c);
+        }
+      });
+      input.addEventListener('keydown', e => {
+        const r = parseInt(e.target.dataset.row);
+        const c = parseInt(e.target.dataset.col);
+        if(e.key === 'Backspace' && e.target.value === '') {
+          e.preventDefault();
+          focusPrevCell(r,c);
+        }
+      });
+    });
+  }
+
+  function checkAnswers() {
+    let totalLetters = 0;
+    let correctLetters = 0;
+    crosswordTable.querySelectorAll('input').forEach(input => {
+      const r = parseInt(input.dataset.row);
+      const c = parseInt(input.dataset.col);
+      const correctLetter = grid[r][c].letter.toUpperCase();
+      if(correctLetter) {
+        totalLetters++;
+        if(input.value === correctLetter) {
+          correctLetters++;
+          input.style.backgroundColor = '#d4edda'; // green
+          input.style.color = '#155724';
+        } else {
+          input.style.backgroundColor = '#f8d7da'; // red
+          input.style.color = '#721c24';
+        }
+      }
+    });
+    return {correctLetters, totalLetters};
+  }
+
+  function resetPuzzle() {
+    crosswordTable.querySelectorAll('input').forEach(input => {
+      input.value = '';
+      input.style.backgroundColor = '';
+      input.style.color = '#3a0764';
+    });
+    scoreMessageDiv.textContent = '';
+  }
+
+  function loadPuzzle(index) {
+    currentPuzzleIndex = index % puzzles.length;
+    const puzzle = puzzles[currentPuzzleIndex];
+    grid = buildGrid(puzzle.words);
+    renderGrid(grid);
+    renderClues(puzzle.words);
+    addInputListeners();
+    resetPuzzle();
+  }
+
+  submitBtn.addEventListener('click', () => {
+    const {correctLetters, totalLetters} = checkAnswers();
+    const percentage = Math.round((correctLetters / totalLetters) * 100);
+    const scoreTxt = `Score: ${correctLetters} out of ${totalLetters} letters correct (${percentage}%)`;
+    scoreMessageDiv.textContent = scoreTxt;
+  });
+
+  nextBtn.addEventListener('click', () => {
+    const nextIndex = (currentPuzzleIndex +1) % puzzles.length;
+    loadPuzzle(nextIndex);
+  });
+
+  // Load first puzzle initially
+  loadPuzzle(currentPuzzleIndex);
+
+})();
+
+ function goToNextPuzzle() {
+  window.location.href = "puzzle3.html"; // Change this to your actual next puzzle file or URL
+}
+</script>
+</body>
+</html>
+

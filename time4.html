@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Women Achievers Crossword Puzzle</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #f2709c 0%, #ff9472 100%);
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  h1 {
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    color: #fff;
+  }
+  #crossword-container {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 950px;
+    margin-bottom: 30px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(13, 38px);
+    grid-template-rows: repeat(13, 38px);
+    gap: 3px;
+    background: #4a1e44;
+    padding: 10px;
+    border-radius: 14px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .cell {
+    background-color: #702963;
+    border-radius: 8px;
+    text-align: center;
+    position: relative;
+    font-weight: 700;
+  }
+  .cell input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 1.4rem;
+    font-weight: 700;
+    caret-color: #ffde59;
+    text-align: center;
+    outline: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    user-select: text;
+  }
+  .cell input:disabled {
+    background-color: #411934;
+    cursor: default;
+  }
+  .black-cell {
+    background: #260b1e;
+    cursor: default;
+  }
+  .number {
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    font-size: 0.55rem;
+    color: #ffde59;
+    font-weight: 600;
+  }
+  #hints {
+    flex: 1;
+    max-width: 370px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    max-height: 480px;
+    overflow-y: auto;
+  }
+  #hints h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #ffde59;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+  #hints ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  #hints li {
+    margin-bottom: 18px;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #fff;
+    user-select: none;
+  }
+  #buttons {
+    display: flex;
+    gap: 25px;
+    justify-content: center;
+    margin-top: auto;
+    flex-wrap: wrap;
+  }
+  button {
+    background: #ffde59;
+    border: none;
+    color: #4a1e44;
+    font-weight: 700;
+    padding: 14px 35px;
+    border-radius: 60px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 7px 15px rgba(255, 222, 89, 0.7);
+    transition: background 0.3s ease, transform 0.2s ease ;
+    user-select: none;
+  }
+  button:hover {
+    background: #ffd833;
+    transform: scale(1.08);
+  }
+  #score {
+    margin-top: 20px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    text-align: center;
+    min-height: 26px;
+    color: #ffde59;
+    text-shadow: 0 0 6px #411934;
+    width: 100%;
+  }
+  /* Scrollbar for hints */
+  #hints::-webkit-scrollbar {
+    width: 9px;
+  }
+  #hints::-webkit-scrollbar-thumb {
+    background: #ffde5980;
+    border-radius: 20px;
+  }
+  #hints::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  @media (max-width: 850px) {
+    #crossword-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    #grid {
+      margin-bottom: 25px;
+      grid-template-columns: repeat(13, 28px);
+      grid-template-rows: repeat(13, 28px);
+      gap: 2px;
+      padding: 8px;
+    }
+    .cell input {
+      font-size: 1rem;
+    }
+    #hints {
+      max-width: 100%;
+      max-height: 350px;
+      padding: 15px 20px;
+    }
+  }
+  @media (max-width: 480px) {
+    #grid {
+      grid-template-columns: repeat(13, 22px);
+      grid-template-rows: repeat(13, 22px);
+    }
+    .cell input {
+      font-size: 0.85rem;
+    }
+    button {
+      padding: 11px 25px;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Crossword Puzzle based on Timeline</h1>
+  <div id="crossword-container" role="main" aria-label="Crossword puzzle and hints">
+    <div id="grid" aria-label="Crossword puzzle grid" role="application" tabindex="0"></div>
+    <div id="hints" aria-live="polite" aria-atomic="true">
+      <h2>Hints</h2>
+      <ul id="hints-list" role="list"></ul>
+    </div>
+  </div>
+  <div id="buttons" role="region" aria-label="Control buttons">
+    <button id="submit" aria-label="Submit crossword answers to check score">Submit</button>
+    <button id="next" aria-label="Reset crossword puzzle for a new attempt" onclick="goToNextPuzzle()">Next</button>
+  </div>
+  <div id="score" aria-live="polite"></div>
+
+<script>
+  // Updated words and clues
+  const crosswordWords = [
+    {number:1, answer:"ARUNDHATIROY", direction:"across", row:6, col:1, hint:"Published the path-breaking feminist novel The God of Small Things."},
+    {number:2, answer:"CHITRABANERJE", direction:"down", row:1, col:1, hint:"Authored The Palace of Illusions, a feminist retelling of the Mahabharata."},
+    {number:3, answer:"SUCHETA", direction:"across", row:3, col:3, hint:"First woman Chief Minister of an Indian state."},
+    {number:4, answer:"VELUNACHIYA", direction:"down", row:2, col:13, hint:"Tamil freedom fighter who resisted the British."},
+    {number:5, answer:"KRUPA", direction:"across", row:1, col:3, hint:"First woman to write a novel in English, titled Saguna."},
+    {number:6, answer:"PRATIBHAPATIL", direction:"down", row:4, col:7, hint:"First female President of India."},
+    {number:7, answer:"TARABAI", direction:"across", row:11, col:2, hint:"Fierce commander under the Maratha Empire."}
+  ];
+
+  const ROWS = 13;
+  const COLS = 13;
+  const gridElement = document.getElementById('grid');
+  const hintsList = document.getElementById('hints-list');
+  const scoreDiv = document.getElementById('score');
+  const submitBtn = document.getElementById('submit');
+  const nextBtn = document.getElementById('next');
+  let grid = [];
+
+  function initCrossword(){
+    grid = [];
+    gridElement.innerHTML = "";
+    hintsList.innerHTML = "";
+    scoreDiv.textContent = "";
+
+    // Initialize grid with empty and black cells
+    for(let r=0; r<ROWS; r++){
+      grid[r] = [];
+      for(let c=0; c<COLS; c++){
+        grid[r][c] = {
+          letter: null,
+          number: null,
+          answerLetters: null,
+          input: null
+        };
+      }
+    }
+
+    // Place words on grid
+    crosswordWords.forEach(({number, answer, direction, row, col, hint})=>{
+      for(let i=0; i<answer.length; i++){
+        let r = row-1;
+        let c = col-1;
+        if(direction === "across") c += i;
+        else r += i;
+        if(r>=0 && r<ROWS && c>=0 && c<COLS){
+          grid[r][c].letter = "";
+          if(i===0) grid[r][c].number = number;
+          grid[r][c].answerLetters = answer[i];
+        }
+      }
+      // Add hint
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>${number}.</strong> ${hint}`;
+      hintsList.appendChild(li);
+    });
+
+    // Render grid
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        const cell = document.createElement('div');
+        cell.className = 'cell';
+        if(grid[r][c].letter === null){
+          cell.classList.add('black-cell');
+          cell.setAttribute('aria-hidden', 'true');
+        }else{
+          const input = document.createElement('input');
+          input.type = "text";
+          input.maxLength = 1;
+          input.inputMode = "text";
+          input.autocomplete = "off";
+          input.setAttribute('aria-label', 'Crossword letter');
+          input.dataset.row = r;
+          input.dataset.col = c;
+          input.dataset.answer = grid[r][c].answerLetters;
+
+          grid[r][c].input = input;
+
+          input.addEventListener('keydown', (e) => {
+            const key = e.key;
+            if(/^[a-zA-Z]$/.test(key)){
+              input.value = '';
+            } else if(key === 'Backspace'){
+              if(input.value === ''){
+                moveFocus(r,c,-1);
+                e.preventDefault();
+              }
+            } else if(key === 'ArrowRight'){
+              e.preventDefault();
+              moveFocus(r,c,1);
+            } else if(key === 'ArrowLeft'){
+              e.preventDefault();
+              moveFocus(r,c,-1);
+            } else if(key === 'ArrowDown'){
+              e.preventDefault();
+              moveFocusVertical(r,c,1);
+            } else if(key === 'ArrowUp'){
+              e.preventDefault();
+              moveFocusVertical(r,c,-1);
+            } else if(key.length === 1){
+              e.preventDefault();
+            }
+          });
+
+          input.addEventListener('input', () => {
+            const val = input.value.toUpperCase();
+            if(val.length > 0){
+              input.value = val[0];
+              moveFocus(r,c,1);
+            }
+          });
+
+          cell.appendChild(input);
+          if(grid[r][c].number){
+            const numberLabel = document.createElement('div');
+            numberLabel.className = 'number';
+            numberLabel.textContent = grid[r][c].number;
+            cell.appendChild(numberLabel);
+          }
+        }
+        gridElement.appendChild(cell);
+      }
+    }
+  }
+
+  function moveFocus(row, col, step) {
+    let newCol = col + step;
+    while (newCol >= 0 && newCol < COLS) {
+      if (grid[row][newCol] && grid[row][newCol].input && !grid[row][newCol].input.disabled) {
+        grid[row][newCol].input.focus();
+        return;
+      }
+      newCol += step;
+    }
+  }
+
+  function moveFocusVertical(row, col, step) {
+    let newRow = row + step;
+    while (newRow >= 0 && newRow < ROWS) {
+      if (grid[newRow][col] && grid[newRow][col].input && !grid[newRow][col].input.disabled) {
+        grid[newRow][col].input.focus();
+        return;
+      }
+      newRow += step;
+    }
+  }
+
+  submitBtn.addEventListener('click', () => {
+    let correctCount = 0;
+    let totalLetters = 0;
+    for(let r=0; r<ROWS; r++){
+      for(let c=0; c<COLS; c++){
+        if(grid[r][c].input){
+          totalLetters++;
+          const userChar = grid[r][c].input.value.toUpperCase();
+          const correctChar = grid[r][c].answerLetters.toUpperCase();
+          if(userChar === correctChar){
+            grid[r][c].input.style.backgroundColor = '#3a703a';
+            correctCount++;
+          } else {
+            grid[r][c].input.style.backgroundColor = '#703a3a';
+          }
+          grid[r][c].input.disabled = true;
+        }
+      }
+    }
+    scoreDiv.textContent = `You scored ${correctCount} / ${totalLetters} (${Math.round((correctCount/totalLetters)*100)}%)`;
+  });
+
+  nextBtn.addEventListener('click', () => {
+    scoreDiv.textContent = '';
+    gridElement.innerHTML = '';
+    hintsList.innerHTML = '';
+    initCrossword();
+  });
+
+  window.onload = () => {
+    initCrossword();
+  };
+
+  function goToNextPuzzle() {
+  window.location.href = "time4.html"; // Change this to your actual next puzzle file or URL
+}
+</script>
+</body>
+</html>

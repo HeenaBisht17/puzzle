@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Women Achievers Crossword Puzzle</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  h1 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+  }
+  #crossword-container {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 900px;
+    margin-bottom: 25px;
+  }
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(13, 38px);
+    grid-template-rows: repeat(13, 38px);
+    gap: 2px;
+    background: #2c2a4a;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    user-select: none;
+  }
+  .cell {
+    background-color: #3a3a70;
+    border-radius: 6px;
+    text-align: center;
+    position: relative;
+    font-weight: 600;
+  }
+  .cell input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 1.25rem;
+    font-weight: 700;
+    caret-color: #ffce00;
+    text-align: center;
+    outline: none;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    padding: 0;
+    user-select: text;
+  }
+  .cell input:disabled {
+    background-color: #1e1e3a;
+    cursor: default;
+  }
+  .black-cell {
+    background: #111129;
+    cursor: default;
+  }
+  .number {
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    font-size: 0.55rem;
+    color: #ccc;
+  }
+  #hints {
+    flex: 1;
+    max-width: 350px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    overflow-y: auto;
+    max-height: 500px;
+  }
+  #hints h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #ffce00;
+    font-weight: 700;
+    text-align: center;
+  }
+  #hints ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  #hints li {
+    margin-bottom: 15px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+  #buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: auto;
+  }
+  button {
+    background: #ffce00;
+    border: none;
+    color: #2c2a4a;
+    font-weight: 700;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(255, 206, 0, 0.6);
+    transition: background 0.3s ease, transform 0.2s ease;
+    user-select: none;
+  }
+  button:hover {
+    background: #f3b800;
+    transform: scale(1.05);
+  }
+  #score {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    min-height: 24px;
+    color: #ffce00;
+    text-shadow: 0 0 4px #222;
+  }
+  /* Scrollbar for hints */
+  #hints::-webkit-scrollbar {
+    width: 8px;
+  }
+  #hints::-webkit-scrollbar-thumb {
+    background: #ffce00aa;
+    border-radius: 10px;
+  }
+  #hints::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+
+
+  @media (max-width: 768px) {
+  #grid {
+    grid-template-columns: repeat(13, 6.5vw);
+    grid-template-rows: repeat(13, 6.5vw);
+    padding: 5px;
+  }
+
+  .cell input {
+    font-size: 1rem;
+  }
+
+  .number {
+    font-size: 0.45rem;
+  }
+
+  #hints {
+    max-width: 100%;
+    order: 2;
+    margin-top: 20px;
+    max-height: none;
+  }
+
+  #crossword-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #grid {
+    grid-template-columns: repeat(13, 5.5vw);
+    grid-template-rows: repeat(13, 5.5vw);
+  }
+
+  .cell input {
+    font-size: 0.9rem;
+  }
+
+  .number {
+    font-size: 0.4rem;
+  }
+}
+
+</style>
+</head>
+<body>
+<h1>Women Achievers Crossword Puzzle</h1>
+<div id="crossword-container">
+  <div id="grid" aria-label="Crossword puzzle grid" role="application" tabindex="0">
+    <!-- We'll generate cells & inputs with JS -->
+  </div>
+  <div id="hints" aria-live="polite" aria-atomic="true">
+    <h2>Hints</h2>
+    <ul>
+      <li><strong>1.</strong> First woman in space (USSR)</li>
+      <li><strong>2.</strong> Indian boxer and multiple-time world champion</li>
+      <li><strong>3.</strong> American media mogul and talk show host</li>
+      <li><strong>4.</strong> Famous Mexican painter known for self-portraits</li>
+      <li><strong>5.</strong> First woman to win a Nobel Prize</li>
+      <li><strong>6.</strong> First woman Prime Minister of India</li>
+      <li><strong>7.</strong> Youngest Nobel laureate for peace from Yemen</li>
+      <li><strong>8.</strong> British writer of the Harry Potter series</li>
+      <li><strong>9.</strong> NASA mathematician featured in Hidden Figures</li>
+    </ul>
+  </div>
+</div>
+<div id="buttons">
+  <button id="submit-btn" aria-label="Submit crossword answers">Submit</button>
+  <button id="next-btn" aria-label="Reset crossword puzzle" onclick="goToNextPuzzle()">Next</button>
+</div>
+<div id="score" aria-live="polite"></div>
+
+<script>
+  /*
+  Puzzle layout:
+  We'll create a 13x13 grid.
+  Word placements:
+
+  1. VALENTINA (1 Across) - row 1, col 1 - horizontal length 9
+  2. MARYKOM (2 Down) - crosses 1 across at A(3rd letter) 'L' (col 3, row 1)
+  3. OPRAH (3 Across) - row 5 col 1 horizontal length 5
+  4. FRIDA (4 Down) - crosses 3 across at R (3rd letter) row5 col3 vertical length 5
+  5. CURIE (5 Across) - row 9 col 3 horizontal length 5
+  6. INDIRA (6 Down) - crosses CURIE at I (4th letter) row 9 col 6 vertical length 6
+  7. TAWAKKOL (7 Across) - row 11 col 1 horizontal length 8
+  8. ROWLING (8 Down) - crosses TAWAKKOL at L (6th letter) row11 col 6 vertical length 7
+  9. KATHERINE (9 Across) - row 7 col 5 horizontal length 9
+
+  Black cells elsewhere.
+  */
+
+  /* Data Model for words and positions */
+
+  const crosswordWords = [
+    {
+      number: 1,
+      answer: "VALENTINA",
+      direction: "across",
+      row: 1,
+      col: 1,
+      hint: "First woman in space (USSR)"
+    },
+    {
+      number: 2,
+      answer: "MARYKOM",
+      direction: "down",
+      row: 1,
+      col: 11,
+      hint: "Indian boxer and multiple-time world champion"
+    },
+    {
+      number: 3,
+      answer: "OPRAH",
+      direction: "across",
+      row: 3,
+      col: 1,
+      hint: "American media mogul and talk show host"
+    },
+    {
+      number: 4,
+      answer: "FRIDA",
+      direction: "down",
+      row: 4,
+      col: 3,
+      hint: "Famous Mexican painter known for self-portraits"
+    },
+    {
+      number: 5,
+      answer: "CURIE",
+      direction: "across",
+      row: 9,
+      col: 3,
+      hint: "First woman to win a Nobel Prize"
+    },
+    {
+      number: 6,
+      answer: "INDIRA",
+      direction: "down",
+      row: 8,
+      col: 13,
+      hint: "First woman Prime Minister of India"
+    },
+    {
+      number: 7,
+      answer: "TAWAKKOL",
+      direction: "across",
+      row: 11,
+      col: 1,
+      hint: "Youngest Nobel laureate for peace from Yemen"
+    },
+    {
+      number: 8,
+      answer: "JKROWLING",
+      direction: "down",
+      row: 5,
+      col: 10,
+      hint: "British writer of the Harry Potter series"
+    },
+    {
+      number: 9,
+      answer: "KATHERINE",
+      direction: "across",
+      row: 7,
+      col: 5,
+      hint: "NASA mathematician featured in Hidden Figures"
+    }
+  ];
+
+  // Grid size
+  const ROWS = 13;
+  const COLS = 13;
+
+  // Create grid array: each cell is { letter:char or null, number: crossword number or null }
+  // Initialize with null cells (blackcells)
+  let grid = [];
+  for(let r=0;r<ROWS;r++) {
+    grid[r] = [];
+    for(let c=0;c<COLS;c++) {
+      grid[r][c] = {
+        letter: null,
+        number: null,
+        inputs: null,
+        answerLetters: null
+      };
+    }
+  }
+
+  // Place words in the grid
+  crosswordWords.forEach(word => {
+    const len = word.answer.length;
+    for(let i=0; i<len; i++) {
+      let r = word.row - 1;
+      let c = word.col - 1;
+      if(word.direction === 'across') {
+        c += i;
+      } else {
+        r += i;
+      }
+      if(grid[r][c]) {
+        grid[r][c].letter = '';
+        if(!grid[r][c].number) {
+          grid[r][c].number = (i === 0) ? word.number : null;
+        }
+        // Store answer letter for checking
+        grid[r][c].answerLetters = word.answer[i];
+      }
+    }
+  });
+
+  const gridElement = document.getElementById('grid');
+
+  // Create the grid UI
+  for(let r=0; r<ROWS; r++) {
+    for(let c=0; c<COLS; c++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      if(grid[r][c].letter === null) {
+        // black cell
+        cell.classList.add('black-cell');
+        cell.setAttribute('aria-hidden','true');
+      } else {
+        // input cell
+        const input = document.createElement('input');
+        input.setAttribute('type', 'text');
+        input.setAttribute('maxlength', '1');
+        input.setAttribute('inputmode', 'text');
+        input.setAttribute('autocomplete', 'off');
+        input.setAttribute('aria-label', 'Crossword letter');
+        // Data attributes to identify cell
+        input.dataset.row = r;
+        input.dataset.col = c;
+        input.dataset.answer = grid[r][c].answerLetters;
+        // Store input ref for scoring
+        grid[r][c].inputs = input;
+
+        // Key handlers to move cursor intelligently
+        input.addEventListener('keydown', (e) => {
+          const key = e.key;
+          if(key.match(/^[a-zA-Z]$/)) {
+            // Allow and move cursor forward after input
+            input.value = '';
+            // Let it type
+            // Delay moving focus on input event
+          } else if(key === 'Backspace') {
+            if(input.value === '') {
+              // Move back to previous if exists
+              moveFocus(r, c, -1);
+              e.preventDefault();
+            }
+            // else normal backspace deletes current letter
+          } else if(key === 'ArrowRight') {
+            e.preventDefault();
+            moveFocus(r, c, 1);
+          } else if(key === 'ArrowLeft') {
+            e.preventDefault();
+            moveFocus(r, c, -1);
+          } else if(key === 'ArrowDown') {
+            e.preventDefault();
+            moveFocusVertical(r, c, 1);
+          } else if(key === 'ArrowUp') {
+            e.preventDefault();
+            moveFocusVertical(r, c, -1);
+          } else if(key.length === 1){
+            e.preventDefault();
+          }
+        });
+        input.addEventListener('input', (e) => {
+          const val = input.value.toUpperCase();
+          if(val.length > 0) {
+            input.value = val[0];
+            // Move focus forward horizontally if possible
+            moveFocus(r, c, 1);
+          }
+        });
+
+        cell.appendChild(input);
+
+        if(grid[r][c].number) {
+          const numberLabel = document.createElement('div');
+          numberLabel.className = 'number';
+          numberLabel.textContent = grid[r][c].number;
+          cell.appendChild(numberLabel);
+        }
+      }
+      gridElement.appendChild(cell);
+    }
+  }
+
+  // Function to move focus horizontally in the grid
+  function moveFocus(row, col, step) {
+    let newCol = col + step;
+    while(newCol >= 0 && newCol < COLS) {
+      if(grid[row][newCol] && grid[row][newCol].inputs && !grid[row][newCol].inputs.disabled) {
+        grid[row][newCol].inputs.focus();
+        return;
+      }
+      newCol += step;
+    }
+  }
+
+  // Function to move focus vertically in the grid
+  function moveFocusVertical(row, col, step) {
+    let newRow = row + step;
+    while(newRow >= 0 && newRow < ROWS) {
+      if(grid[newRow][col] && grid[newRow][col].inputs && !grid[newRow][col].inputs.disabled) {
+        grid[newRow][col].inputs.focus();
+        return;
+      }
+      newRow += step;
+    }
+  }
+
+  // Submit button handler
+  const submitBtn = document.getElementById('submit-btn');
+  const scoreDiv = document.getElementById('score');
+
+  submitBtn.addEventListener('click', () => {
+    let correctCount = 0;
+    let totalLetters = 0;
+
+    for(let r=0; r<ROWS; r++) {
+      for(let c=0; c<COLS; c++) {
+        if(grid[r][c].inputs) {
+          totalLetters++;
+          let userChar = grid[r][c].inputs.value.toUpperCase();
+          let correctChar = grid[r][c].answerLetters.toUpperCase();
+          if(userChar === correctChar) {
+            grid[r][c].inputs.style.backgroundColor = '#3a703a'; // correct green
+            correctCount++;
+          } else {
+            grid[r][c].inputs.style.backgroundColor = '#703a3a'; // wrong red
+          }
+          grid[r][c].inputs.disabled = true; // disable input after submission
+        }
+      }
+    }
+    const scorePercent = Math.round((correctCount/totalLetters)*100);
+    scoreDiv.textContent = `Your score: ${correctCount} / ${totalLetters} (${scorePercent}%)`;
+  });
+
+  // Next button handler - Reset all inputs and UI states
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.addEventListener('click', () => {
+    scoreDiv.textContent = '';
+    for(let r=0; r<ROWS; r++) {
+      for(let c=0; c<COLS; c++) {
+        if(grid[r][c].inputs) {
+          grid[r][c].inputs.value = '';
+          grid[r][c].inputs.style.backgroundColor = 'transparent';
+          grid[r][c].inputs.disabled = false;
+        }
+      }
+    }
+    // Focus first input on reset
+    for(let r=0; r<ROWS; r++) {
+      let focused = false;
+      for(let c=0; c<COLS; c++) {
+        if(grid[r][c].inputs && !grid[r][c].inputs.disabled) {
+          grid[r][c].inputs.focus();
+          focused = true;
+          break;
+        }
+      }
+      if(focused) break;
+    }
+  });
+
+  // Focus the first crossword input on load
+  window.onload = () => {
+    for(let r=0; r<ROWS; r++) {
+      for(let c=0; c<COLS; c++) {
+        if(grid[r][c].inputs) {
+          grid[r][c].inputs.focus();
+          return;
+        }
+      }
+    }
+  };
+
+ function goToNextPuzzle() {
+  window.location.href = "puzzle5.html"; // Change this to your actual next puzzle file or URL
+}
+
+</script>
+</body>
+</html>
+
